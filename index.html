@@ -23,40 +23,45 @@
       flex-direction: column;
       padding: 5vw;
       transition: background-color 0.5s ease, color 0.5s ease;
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
     #container {
-      max-width: 480px;
+      max-width: 500px;
       width: 100%;
       text-align: center;
       position: relative;
     }
 
     #typing {
-      font-size: 5.5vw;
+      font-size: 28px;
       white-space: nowrap;
       overflow: hidden;
       border-right: 3px solid white;
       margin-bottom: 20px;
-      min-height: 40px;
+      min-height: 48px;
     }
 
     p {
-      font-size: 4.5vw;
+      font-size: 18px;
       margin-bottom: 20px;
     }
 
     button {
       padding: 12px;
-      font-size: 4.5vw;
-      width: 90%;
-      margin: 10px auto;
+      font-size: 16px;
+      width: 100%;
+      margin: 10px 0;
       cursor: pointer;
       border: none;
       border-radius: 5px;
       transition: all 0.4s ease;
-      display: block;
+    }
+
+    /* Remove focus/click shadow */
+    button:focus, button:active {
+      outline: none;
+      box-shadow: none;
     }
 
     .continue-btn {
@@ -120,10 +125,9 @@
     .login-box {
       background: white;
       color: black;
-      padding: 5vw;
+      padding: 20px;
       border-radius: 10px;
       position: relative;
-      margin-bottom: 20px;
     }
 
     input {
@@ -132,7 +136,6 @@
       margin: 10px 0;
       border: 1px solid #ccc;
       border-radius: 5px;
-      font-size: 4.5vw;
     }
 
     .error {
@@ -159,18 +162,32 @@
     /* Floating Flower */
     .floating-flower {
       position: absolute;
-      top: -25px;
+      top: -30px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 24px;
+      font-size: 32px;
       animation: floatUpDown 3s ease-in-out infinite;
       pointer-events: none;
     }
 
     @keyframes floatUpDown {
       0% { transform: translateX(-50%) translateY(0); }
-      50% { transform: translateX(-50%) translateY(-10px); }
+      50% { transform: translateX(-50%) translateY(-15px); }
       100% { transform: translateX(-50%) translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      #typing {
+        font-size: 6vw;
+      }
+
+      p, button {
+        font-size: 4.5vw;
+      }
+
+      .login-box {
+        padding: 15px;
+      }
     }
   </style>
 </head>
@@ -189,7 +206,7 @@
     <div id="login-section" class="hidden">
       <div class="login-box">
         <span class="floating-flower">🌸❤️</span>
-        <h2 style="font-size: 6vw;">Login</h2>
+        <h2>Login</h2>
         <input type="text" id="username" placeholder="Username" autocomplete="off" />
         <input type="password" id="password" placeholder="Password" autocomplete="off" />
         <button class="login-btn" onclick="loginWithSound()">Login</button>
@@ -233,7 +250,8 @@
         utter.voice = selectedVoice;
         utter.pitch = 1;
         utter.rate = 1;
-        synth.cancel();
+
+        synth.cancel(); // Cancel any pending
         synth.speak(utter);
       }
 
@@ -248,6 +266,7 @@
       document.getElementById("continue-sound").play().catch(() => {});
       document.getElementById("welcome-section").classList.add("hidden");
       document.getElementById("login-section").classList.remove("hidden");
+
       loadVoiceAndSpeak("Welcome to Mohit Saxena’s Portal");
     }
 
