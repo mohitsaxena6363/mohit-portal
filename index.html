@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Mohit Saxena Portal</title>
   <style>
     * {
@@ -21,20 +21,20 @@
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      padding: 5vw;
+      padding: clamp(20px, 5vw, 40px);
       transition: background-color 0.5s ease, color 0.5s ease;
       overflow-x: hidden;
     }
 
     #container {
-      max-width: 500px;
+      max-width: 480px;
       width: 100%;
       text-align: center;
       position: relative;
     }
 
     #typing {
-      font-size: 5vw;
+      font-size: clamp(18px, 5.5vw, 32px);
       white-space: nowrap;
       overflow: hidden;
       border-right: 3px solid white;
@@ -43,19 +43,21 @@
     }
 
     p {
-      font-size: 4.5vw;
+      font-size: clamp(16px, 4.5vw, 28px);
       margin-bottom: 20px;
     }
 
     button {
       padding: 12px;
-      font-size: 4.5vw;
+      font-size: clamp(16px, 4.5vw, 28px);
       width: 100%;
       margin: 10px 0;
       cursor: pointer;
       border: none;
       border-radius: 5px;
       transition: all 0.4s ease;
+      display: block;
+      box-shadow: none;
     }
 
     .continue-btn {
@@ -64,6 +66,7 @@
       font-weight: bold;
       border-radius: 50px;
       box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4);
+      animation: pulse 2s infinite;
     }
 
     .continue-btn:hover {
@@ -76,6 +79,7 @@
       font-weight: bold;
       border-radius: 50px;
       box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+      animation: pulse 2s infinite;
     }
 
     .login-btn:hover {
@@ -87,16 +91,30 @@
       color: white;
       font-weight: bold;
       border-radius: 50px;
+      animation: pulse-dark 2s infinite;
+      box-shadow: none !important;
     }
 
     .mode-btn.toggle-anim {
       animation: scaleShine 0.5s ease;
     }
 
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0,114,255,0.5); }
+      70% { box-shadow: 0 0 0 15px rgba(0,114,255,0); }
+      100% { box-shadow: 0 0 0 0 rgba(0,114,255,0); }
+    }
+
+    @keyframes pulse-dark {
+      0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.2); }
+      70% { box-shadow: 0 0 0 15px rgba(255,255,255,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+    }
+
     @keyframes scaleShine {
-      0% { transform: scale(1); filter: brightness(1); }
-      50% { transform: scale(1.2); filter: brightness(1.5); }
-      100% { transform: scale(1); filter: brightness(1); }
+      0%   { transform: scale(1);     filter: brightness(1); }
+      50%  { transform: scale(1.2);   filter: brightness(1.5); }
+      100% { transform: scale(1);     filter: brightness(1); }
     }
 
     .hidden { display: none; }
@@ -107,6 +125,7 @@
       padding: 5vw;
       border-radius: 10px;
       position: relative;
+      margin-bottom: 20px;
     }
 
     input {
@@ -115,13 +134,12 @@
       margin: 10px 0;
       border: 1px solid #ccc;
       border-radius: 5px;
-      font-size: 4vw;
+      font-size: clamp(16px, 4.5vw, 28px);
     }
 
     .error {
       color: red;
       margin-top: 10px;
-      font-size: 4vw;
     }
 
     body.night {
@@ -140,24 +158,29 @@
       border: 1px solid #666;
     }
 
+    /* Floating Flower */
     .floating-flower {
       position: absolute;
-      top: -30px;
+      top: -25px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 7vw;
+      font-size: 24px;
       animation: floatUpDown 3s ease-in-out infinite;
       pointer-events: none;
     }
 
     @keyframes floatUpDown {
       0% { transform: translateX(-50%) translateY(0); }
-      50% { transform: translateX(-50%) translateY(-15px); }
+      50% { transform: translateX(-50%) translateY(-10px); }
       100% { transform: translateX(-50%) translateY(0); }
     }
   </style>
 </head>
 <body>
+
+  <audio id="continue-sound" src="https://www.soundjay.com/button/sounds/button-4.mp3" preload="auto"></audio>
+  <audio id="login-sound" src="https://www.soundjay.com/button/sounds/button-16.mp3" preload="auto"></audio>
+
   <div id="container">
     <div id="welcome-section">
       <h1 id="typing"></h1>
@@ -168,7 +191,7 @@
     <div id="login-section" class="hidden">
       <div class="login-box">
         <span class="floating-flower">🌸❤️</span>
-        <h2>Login</h2>
+        <h2 style="font-size: 6vw;">Login</h2>
         <input type="text" id="username" placeholder="Username" autocomplete="off" />
         <input type="password" id="password" placeholder="Password" autocomplete="off" />
         <button class="login-btn" onclick="loginWithSound()">Login</button>
@@ -179,20 +202,42 @@
   </div>
 
   <script>
+    // Typing animation
+    document.addEventListener("DOMContentLoaded", () => {
+      const typing = document.getElementById("typing");
+      const text = "Welcome to Mohit Saxena's Portal";
+      let i = 0;
+      function typeLetter() {
+        if (i < text.length) {
+          typing.textContent += text.charAt(i);
+          i++;
+          setTimeout(typeLetter, 90);
+        }
+      }
+      typeLetter();
+    });
+
+    // Voice setup
+    let selectedVoice = null;
     const synth = window.speechSynthesis;
 
-    function speak(message) {
+    function loadVoiceAndSpeak(message) {
       function setVoiceAndSpeak() {
         const voices = synth.getVoices();
-        const selected = voices.find(v => v.name.toLowerCase().includes("google") && v.name.toLowerCase().includes("female"))
-                      || voices.find(v => v.name.toLowerCase().includes("female")) || voices[0];
+        if (!voices.length) return;
+        selectedVoice = voices.find(v =>
+          v.name.toLowerCase().includes("google") &&
+          v.name.toLowerCase().includes("female")
+        ) || voices.find(v => v.name.toLowerCase().includes("female")) || voices[0];
+
         const utter = new SpeechSynthesisUtterance(message);
-        utter.voice = selected;
+        utter.voice = selectedVoice;
         utter.pitch = 1;
         utter.rate = 1;
         synth.cancel();
         synth.speak(utter);
       }
+
       if (!synth.getVoices().length) {
         synth.onvoiceschanged = setVoiceAndSpeak;
       } else {
@@ -201,12 +246,14 @@
     }
 
     function handleContinue() {
+      document.getElementById("continue-sound").play().catch(() => {});
       document.getElementById("welcome-section").classList.add("hidden");
       document.getElementById("login-section").classList.remove("hidden");
-      speak("Welcome to Mohit Saxena’s Portal");
+      loadVoiceAndSpeak("Welcome to Mohit Saxena’s Portal");
     }
 
     function loginWithSound() {
+      document.getElementById("login-sound").play().catch(() => {});
       setTimeout(login, 300);
     }
 
@@ -229,20 +276,6 @@
       btn.classList.add("toggle-anim");
       setTimeout(() => btn.classList.remove("toggle-anim"), 500);
     }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const typing = document.getElementById("typing");
-      const text = "Welcome to Mohit Saxena's Portal";
-      let i = 0;
-      function typeLetter() {
-        if (i < text.length) {
-          typing.textContent += text.charAt(i);
-          i++;
-          setTimeout(typeLetter, 90);
-        }
-      }
-      typeLetter();
-    });
   </script>
 </body>
 </html>
